@@ -554,6 +554,7 @@ export function startScene(canvas: HTMLCanvasElement, host: HTMLElement) {
   const orb = { x: 0.8, y: 0.2 };
 
   function build() {
+    const prevW = W;
     const r = host.getBoundingClientRect();
     W = Math.max(320, Math.round(r.width));
     H = Math.max(400, Math.round(r.height));
@@ -631,12 +632,16 @@ export function startScene(canvas: HTMLCanvasElement, host: HTMLElement) {
     const rs = seeded(23);
     stars = Array.from({ length: Math.round((W * H) / 6000) }, () => ({ x: rs() * W, y: rs() * H * 0.6, r: 0.4 + rs() * 1.1, ph: rs() * 6.28 }));
     const ds = Math.min(1, W / 1200) * 0.95 + 0.25;
-    dragons = [
+    const flock: Dragon[] = [
       { depth: 0.1, y: 0.44, speed: 24, scale: 0.42 * ds, dir: 1, phase: 0, flap: 4.2, x: W * 0.12 },
       { depth: 0.15, y: 0.34, speed: 20, scale: 0.34 * ds, dir: -1, phase: 2, flap: 4.6, x: W * 0.78 },
       { depth: 0.2, y: 0.5, speed: 28, scale: 0.5 * ds, dir: 1, phase: 4, flap: 3.8, x: W * 0.62 },
       { depth: 1, y: 0.14, speed: 60, scale: 1.05 * ds, dir: 1, phase: 1, flap: 3, x: W * 0.05 },
     ];
+    // Rebuilds (theme switch, resize) keep the flight going: same place across the screen, only the size adapts.
+    dragons = dragons.length
+      ? dragons.map((d, i) => ({ ...d, scale: flock[i].scale, x: prevW ? (d.x / prevW) * W : d.x }))
+      : flock;
   }
 
   function frame(now: number, dt: number) {
