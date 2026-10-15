@@ -3,118 +3,23 @@ import { profile } from '../data/profile';
 import { yearsAcross } from '../lib/time';
 
 const years = Math.floor(yearsAcross([[profile.careerStart, 'present']]));
-
-// Deterministic pseudo-random so every build draws the same scene.
-let seed = 11;
-const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-
-// Mountain range with snowcaps: peaks → ridge path + one jagged cap per peak.
-function range(peaks: [number, number][], base: number) {
-  let ridge = `M0 ${base} L0 ${peaks[0][1] + 120}`;
-  const caps: string[] = [];
-  peaks.forEach(([x, y], i) => {
-    const next = peaks[i + 1];
-    ridge += ` L${x} ${y}`;
-    if (next) ridge += ` L${(x + next[0]) / 2} ${Math.max(y, next[1]) + 70 + rand() * 50}`;
-    const d = 38 + rand() * 30; // cap depth
-    const w = d * 1.1;
-    caps.push(
-      `M${x} ${y} L${x + w} ${y + d} L${x + w * 0.55} ${y + d * 0.75} L${x + w * 0.2} ${y + d * 1.05} L${x - w * 0.25} ${y + d * 0.7} L${x - w * 0.6} ${y + d * 0.95} L${x - w} ${y + d} Z`,
-    );
-  });
-  ridge += ` L1440 ${peaks.at(-1)![1] + 120} L1440 ${base} Z`;
-  return { ridge, caps: caps.join(' ') };
-}
-const far = range([[90, 330], [300, 250], [520, 310], [760, 220], [980, 290], [1200, 240], [1390, 300]], 900);
-const mid = range([[160, 470], [430, 400], [700, 460], [1010, 380], [1300, 440]], 900);
-
-// Gothic city on a cliff: [x, width, height, spire]
-const base = 712;
-const towers: [number, number, number, number][] = [
-  [292, 34, 92, 44], [330, 28, 70, 30], [362, 46, 140, 84], [412, 24, 96, 46],
-  [440, 58, 196, 150], [600, 58, 196, 150], [662, 24, 96, 46], [690, 46, 140, 84],
-  [740, 28, 70, 30], [772, 34, 92, 44], [810, 30, 64, 26],
-];
-const city = [
-  ...towers.map(([x, w, h, s]) => `M${x} ${base} V${base - h} L${x + w / 2} ${base - h - s} L${x + w} ${base - h} V${base} Z`),
-  // nave between the twin towers, with a central flèche
-  `M498 ${base} V${base - 120} L549 ${base - 170} L600 ${base - 120} V${base} Z`,
-  `M540 ${base - 160} V${base - 210} L549 ${base - 300} L558 ${base - 210} V${base - 160} Z`,
-].join(' ');
-const windows = towers.flatMap(([x, w, h]) => {
-  const out: { x: number; y: number; lit: boolean }[] = [];
-  for (let y = base - h + 14; y < base - 14; y += 22)
-    for (let cx = x + 7; cx < x + w - 9; cx += 12) out.push({ x: cx, y, lit: rand() > 0.55 });
-  return out;
-});
-const cliff = `M250 ${base} L880 ${base} L905 760 L960 820 L1010 900 L170 900 L210 820 L235 770 Z`;
-
-// Original wyvern silhouette (faces right), 200×100 box.
-const dragon =
-  'M2 74 Q40 70 78 64 L96 58 Q84 30 52 4 Q62 26 58 40 Q70 34 74 48 Q84 42 88 54 L104 56 Q126 22 168 6 Q160 26 166 34 Q150 34 150 44 Q140 42 136 52 L140 54 Q156 50 168 44 L182 40 L176 30 L186 38 L198 44 L184 50 Q172 52 160 58 Q140 68 116 70 L112 80 L106 72 Q70 76 40 76 Z';
-const dragons = [
-  { top: '20%', scale: 1.15, dur: 70, delay: -18, o: 0.95 },
-  { top: '30%', scale: 0.55, dur: 95, delay: -60, o: 0.7 },
-  { top: '14%', scale: 0.4, dur: 110, delay: -5, o: 0.55 },
-];
 ---
 
 <section
   id="top"
-  class="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden pt-16"
-  style="background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-low) 80%);"
+  class="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden pt-16 pb-10"
+  style="background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 50%, var(--sky-low) 85%);"
 >
-  <!-- Moon by night, pale sun through the storm by day -->
-  <div class="pointer-events-none absolute top-[12%] right-[10%] -z-20 size-28 sm:size-40 lg:right-[16%]" aria-hidden="true">
-    <div class="absolute -inset-16 rounded-full blur-2xl" style="background: radial-gradient(circle, var(--orb-glow), transparent 70%);"></div>
-    <div class="absolute inset-0 rounded-full" style="background: radial-gradient(circle at 38% 35%, var(--orb), color-mix(in srgb, var(--orb) 75%, var(--sky-mid)));"></div>
-  </div>
+  <!-- Painted, animated highlands: see src/scripts/scene.ts (sky gradient above is the no-JS fallback) -->
+  <canvas id="hero-scene" class="pointer-events-none absolute inset-0 -z-20 h-full w-full" aria-hidden="true"></canvas>
 
-  <!-- Dragons gliding across the sky -->
-  <div class="pointer-events-none absolute inset-0 -z-20" aria-hidden="true">
-    {
-      dragons.map((d) => (
-        <div class="absolute left-0" style={`top:${d.top};animation:glide ${d.dur}s linear ${d.delay}s infinite;`}>
-          <svg
-            viewBox="0 0 200 100"
-            style={`width:min(${Math.round(220 * d.scale)}px, ${Math.round(28 * d.scale)}vw);opacity:${d.o};animation:bob 6s ease-in-out infinite;`}
-          >
-            <path d={dragon} style="fill:var(--dragon)" />
-          </svg>
-        </div>
-      ))
-    }
-  </div>
-
-  <!-- Highlands, cliff and the holy city -->
-  <svg
-    class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[75%] w-full"
-    viewBox="0 0 1440 900"
-    preserveAspectRatio="xMidYMax slice"
-    aria-hidden="true"
-  >
-    <path d={far.ridge} style="fill:var(--mtn-far)"></path>
-    <path d={far.caps} style="fill:var(--snowcap)" opacity="0.75"></path>
-    <path d={mid.ridge} style="fill:var(--mtn-mid)"></path>
-    <path d={mid.caps} style="fill:var(--snowcap)" opacity="0.85"></path>
-    <g transform="translate(-150 0)">
-      <path d={cliff} style="fill:var(--mtn-near)"></path>
-      <path d={city} style="fill:var(--city)"></path>
-      <circle cx="549" cy={base - 80} r="9" style="fill:var(--window);opacity:calc(var(--window-o) * 0.6)"></circle>
-      <g style="fill:var(--window)">
-        {windows.filter((w) => w.lit).map((w) => <rect x={w.x} y={w.y} width="3" height="7" rx="1.5" style="opacity:var(--window-o)" />)}
-      </g>
-    </g>
-    <path d="M0 800 Q240 760 480 790 T960 785 T1440 790 V900 H0 Z" style="fill:var(--snowcap)" opacity="0.9"></path>
-  </svg>
-
-  <!-- Veil behind the title for legibility, and a fade into the page -->
-  <div class="pointer-events-none absolute inset-0 -z-10" style="background: radial-gradient(ellipse 55% 45% at 50% 52%, color-mix(in srgb, var(--hero-fade) 55%, transparent), transparent 75%);"></div>
-  <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40" style="background: linear-gradient(transparent, var(--hero-fade));"></div>
+  <!-- Soft veil behind the wordmark, and a fade into the page -->
+  <div class="pointer-events-none absolute inset-0 -z-10" style="background: radial-gradient(ellipse 50% 38% at 50% 42%, color-mix(in srgb, var(--hero-fade) 45%, transparent), transparent 75%);"></div>
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32" style="background: linear-gradient(transparent, var(--hero-fade));"></div>
 
   <!-- Wordmark -->
   <div class="relative mx-auto max-w-5xl px-4 text-center sm:px-6">
-    <p class="font-display text-[0.7rem] tracking-[0.3em] text-aether uppercase sm:text-sm sm:tracking-[0.5em]">The Supply Chain Chronicles</p>
+    <p class="hero-halo font-display text-[0.7rem] tracking-[0.3em] text-aether uppercase sm:text-sm sm:tracking-[0.5em]">The Supply Chain Chronicles</p>
 
     <h1 class="mt-4 font-display leading-none font-bold tracking-[0.06em] uppercase">
       <span class="title-text block text-[clamp(2.6rem,10vw,7.5rem)]">{profile.name.split(' ')[0]}</span>
@@ -123,21 +28,27 @@ const dragons = [
 
     <div class="divider"><span></span></div>
 
-    <p class="mx-auto mt-6 max-w-3xl font-serif text-base leading-relaxed text-ink-strong sm:text-lg md:text-xl">
-      {profile.headline}
-    </p>
+    <!-- Frosted plate keeps the copy readable over the painted mountains -->
+    <div class="hero-plate mx-auto mt-6 max-w-3xl px-5 py-5 sm:px-8">
+      <p class="font-serif text-base leading-relaxed text-ink-strong sm:text-lg md:text-xl">{profile.headline}</p>
+      <p class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-frost/30 pt-4 font-display text-[0.7rem] tracking-[0.25em] text-frost-light uppercase sm:text-xs">
+        <span>Current Expansion</span>
+        <span class="text-aether">◆</span>
+        <span class="text-ink-strong">{profile.currentExpansion}</span>
+        <span class="hidden text-aether sm:inline">◆</span>
+        <span class="w-full sm:w-auto">{years}+ years of adventuring</span>
+      </p>
+    </div>
 
-    <p class="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-y border-frost/40 px-5 py-2 font-display text-[0.7rem] tracking-[0.25em] text-frost-light uppercase sm:text-xs">
-      <span>Current Expansion</span>
-      <span class="text-aether">◆</span>
-      <span class="text-ink-strong">{profile.currentExpansion}</span>
-      <span class="hidden text-aether sm:inline">◆</span>
-      <span class="w-full sm:w-auto">{years}+ years of adventuring</span>
-    </p>
-
-    <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+    <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
       <a href="#character" class="btn btn-gold w-full max-w-xs sm:w-auto">Begin Your Journey</a>
       <a href="#party" class="btn btn-ghost w-full max-w-xs sm:w-auto">Join the Party</a>
     </div>
   </div>
 </section>
+
+<script>
+  import { startScene } from '../scripts/scene';
+  const canvas = document.getElementById('hero-scene') as HTMLCanvasElement;
+  startScene(canvas, document.getElementById('top')!);
+</script>

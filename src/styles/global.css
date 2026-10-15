@@ -76,6 +76,12 @@
   --window-o: 0.35;
   --dragon: #34435a;
   --hero-fade: #e4eaf1;
+  --fog: #ffffff;
+  --rim: #ffffff;
+  --star-o: 0;
+  --ray-o: 0.07;
+  --plate: rgb(240 245 251 / 0.62);
+  --halo: 0 0 14px rgb(240 245 251 / 0.95), 0 0 3px rgb(240 245 251 / 0.9);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -121,6 +127,12 @@
     --window-o: 0.9;
     --dragon: #04070e;
     --hero-fade: #060912;
+  --fog: #8ca5d2;
+  --rim: #c8dcff;
+  --star-o: 1;
+  --ray-o: 0.06;
+  --plate: rgb(6 9 18 / 0.55);
+  --halo: 0 0 14px rgb(6 9 18 / 0.95), 0 0 3px rgb(6 9 18 / 0.9);
   }
 }
 :root[data-theme='dark'] {
@@ -166,6 +178,12 @@
   --window-o: 0.9;
   --dragon: #04070e;
   --hero-fade: #060912;
+  --fog: #8ca5d2;
+  --rim: #c8dcff;
+  --star-o: 1;
+  --ray-o: 0.06;
+  --plate: rgb(6 9 18 / 0.55);
+  --halo: 0 0 14px rgb(6 9 18 / 0.95), 0 0 3px rgb(6 9 18 / 0.9);
 }
 
 /* Page ground is unlayered on purpose: it must beat any host/reset stylesheet
@@ -309,6 +327,18 @@ body {
   }
   .btn-ghost:hover::before {
     background: var(--ghost-hover);
+  }
+
+  /* Hero copy plate: frosted glass with clipped corners */
+  .hero-plate {
+    background: var(--plate);
+    -webkit-backdrop-filter: blur(8px) saturate(1.2);
+    backdrop-filter: blur(8px) saturate(1.2);
+    box-shadow: inset 0 0 0 1px rgb(var(--frost-rgb) / 0.3);
+    clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+  }
+  .hero-halo {
+    text-shadow: var(--halo);
   }
 
   /* Hover shine sweep for cards */

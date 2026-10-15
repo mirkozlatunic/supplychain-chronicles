@@ -39,7 +39,8 @@ src/
   lib/time.ts          durations, levels, date formatting
   components/          Nav, Hero, Topics, Character, Jobs, QuestLog, Achievements, Linguist, Party, Footer
   layouts/Base.astro   <head>, fonts, scroll-reveal script
-  styles/global.css    theme tokens, gold frames, buttons, animations
+  scripts/scene.ts     painted, animated hero backdrop (canvas)
+  styles/global.css    light/dark theme tokens, frames, buttons, animations
 ```
 
 Fan-made styling; not affiliated with Square Enix. All artwork is original CSS/SVG.
