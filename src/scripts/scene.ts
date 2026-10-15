@@ -755,7 +755,8 @@ export function startScene(canvas: HTMLCanvasElement, host: HTMLElement) {
   new IntersectionObserver(([e]) => ((visible = e.isIntersecting), run())).observe(host);
   document.addEventListener('visibilitychange', run);
   reduce.addEventListener('change', run);
-  const rebuild = () => (build(), run());
+  // draw the new theme immediately so a theme transition captures a painted frame
+  const rebuild = () => (build(), frame(performance.now(), 0), run());
   new MutationObserver(rebuild).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rebuild);
   host.addEventListener('pointermove', (e) => {

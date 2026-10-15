@@ -133,8 +133,7 @@ const links = [
     themeBtn.querySelector('.theme-moon')!.classList.toggle('hidden', theme !== 'dark');
     themeBtn.querySelector('.theme-sun')!.classList.toggle('hidden', theme === 'dark');
   };
-  themeBtn.addEventListener('click', () => {
-    const next = current() === 'dark' ? 'light' : 'dark';
+  const applyTheme = (next: 'light' | 'dark') => {
     root.dataset.theme = next;
     try {
       localStorage.setItem('theme', next);
@@ -142,6 +141,29 @@ const links = [
       /* storage unavailable: the choice lasts for this visit only */
     }
     paintToggle();
+  };
+  themeBtn.addEventListener('click', () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return applyTheme(next);
+
+    // Preferred: the new theme spreads out in a circle from the switch (View Transitions API)
+    const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };
+    if (doc.startViewTransition) {
+      const r = themeBtn.getBoundingClientRect();
+      const x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      doc.startViewTransition(() => applyTheme(next)).ready.then(() => {
+        root.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          { duration: 900, easing: 'cubic-bezier(.4,0,.2,1)', pseudoElement: '::view-transition-new(root)' },
+        );
+      });
+      return;
+    }
+    // Fallback: cross-fade every colour for a moment
+    root.classList.add('theme-fade');
+    applyTheme(next);
+    setTimeout(() => root.classList.remove('theme-fade'), 750);
   });
   darkOS.addEventListener('change', paintToggle);
   paintToggle();
