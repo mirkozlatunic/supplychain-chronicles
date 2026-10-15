@@ -4,100 +4,133 @@ import { yearsAcross } from '../lib/time';
 
 const years = Math.floor(yearsAcross([[profile.careerStart, 'present']]));
 
-// Deterministic "random" aether motes so builds are reproducible.
-let seed = 7;
-const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-const motes = Array.from({ length: 36 }, () => ({
-  left: rand() * 100,
-  size: 2 + rand() * 4,
-  delay: -rand() * 18,
-  dur: 12 + rand() * 14,
-  dx: (rand() - 0.5) * 120,
-  o: 0.4 + rand() * 0.6,
-}));
+// Deterministic pseudo-random so every build draws the same scene.
+let seed = 11;
+const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// Mountain range with snowcaps: peaks → ridge path + one jagged cap per peak.
+function range(peaks: [number, number][], base: number) {
+  let ridge = `M0 ${base} L0 ${peaks[0][1] + 120}`;
+  const caps: string[] = [];
+  peaks.forEach(([x, y], i) => {
+    const next = peaks[i + 1];
+    ridge += ` L${x} ${y}`;
+    if (next) ridge += ` L${(x + next[0]) / 2} ${Math.max(y, next[1]) + 70 + rand() * 50}`;
+    const d = 38 + rand() * 30; // cap depth
+    const w = d * 1.1;
+    caps.push(
+      `M${x} ${y} L${x + w} ${y + d} L${x + w * 0.55} ${y + d * 0.75} L${x + w * 0.2} ${y + d * 1.05} L${x - w * 0.25} ${y + d * 0.7} L${x - w * 0.6} ${y + d * 0.95} L${x - w} ${y + d} Z`,
+    );
+  });
+  ridge += ` L1440 ${peaks.at(-1)![1] + 120} L1440 ${base} Z`;
+  return { ridge, caps: caps.join(' ') };
+}
+const far = range([[90, 330], [300, 250], [520, 310], [760, 220], [980, 290], [1200, 240], [1390, 300]], 900);
+const mid = range([[160, 470], [430, 400], [700, 460], [1010, 380], [1300, 440]], 900);
+
+// Gothic city on a cliff: [x, width, height, spire]
+const base = 712;
+const towers: [number, number, number, number][] = [
+  [292, 34, 92, 44], [330, 28, 70, 30], [362, 46, 140, 84], [412, 24, 96, 46],
+  [440, 58, 196, 150], [600, 58, 196, 150], [662, 24, 96, 46], [690, 46, 140, 84],
+  [740, 28, 70, 30], [772, 34, 92, 44], [810, 30, 64, 26],
+];
+const city = [
+  ...towers.map(([x, w, h, s]) => `M${x} ${base} V${base - h} L${x + w / 2} ${base - h - s} L${x + w} ${base - h} V${base} Z`),
+  // nave between the twin towers, with a central flèche
+  `M498 ${base} V${base - 120} L549 ${base - 170} L600 ${base - 120} V${base} Z`,
+  `M540 ${base - 160} V${base - 210} L549 ${base - 300} L558 ${base - 210} V${base - 160} Z`,
+].join(' ');
+const windows = towers.flatMap(([x, w, h]) => {
+  const out: { x: number; y: number; lit: boolean }[] = [];
+  for (let y = base - h + 14; y < base - 14; y += 22)
+    for (let cx = x + 7; cx < x + w - 9; cx += 12) out.push({ x: cx, y, lit: rand() > 0.55 });
+  return out;
+});
+const cliff = `M250 ${base} L880 ${base} L905 760 L960 820 L1010 900 L170 900 L210 820 L235 770 Z`;
+
+// Original wyvern silhouette (faces right), 200×100 box.
+const dragon =
+  'M2 74 Q40 70 78 64 L96 58 Q84 30 52 4 Q62 26 58 40 Q70 34 74 48 Q84 42 88 54 L104 56 Q126 22 168 6 Q160 26 166 34 Q150 34 150 44 Q140 42 136 52 L140 54 Q156 50 168 44 L182 40 L176 30 L186 38 L198 44 L184 50 Q172 52 160 58 Q140 68 116 70 L112 80 L106 72 Q70 76 40 76 Z';
+const dragons = [
+  { top: '20%', scale: 1.15, dur: 70, delay: -18, o: 0.95 },
+  { top: '30%', scale: 0.55, dur: 95, delay: -60, o: 0.7 },
+  { top: '14%', scale: 0.4, dur: 110, delay: -5, o: 0.55 },
+];
 ---
 
-<section id="top" class="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden pt-16">
-  <!-- Sky -->
-  <div
-    class="absolute inset-0 -z-30"
-    style="background: radial-gradient(ellipse 70% 55% at 50% 38%, #1d3566 0%, #0d1730 45%, #05070d 85%);"
-  >
+<section
+  id="top"
+  class="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden pt-16"
+  style="background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-low) 80%);"
+>
+  <!-- Moon by night, pale sun through the storm by day -->
+  <div class="pointer-events-none absolute top-[12%] right-[10%] -z-20 size-28 sm:size-40 lg:right-[16%]" aria-hidden="true">
+    <div class="absolute -inset-16 rounded-full blur-2xl" style="background: radial-gradient(circle, var(--orb-glow), transparent 70%);"></div>
+    <div class="absolute inset-0 rounded-full" style="background: radial-gradient(circle at 38% 35%, var(--orb), color-mix(in srgb, var(--orb) 75%, var(--sky-mid)));"></div>
   </div>
 
-  <!-- Stars -->
-  <div
-    class="absolute inset-0 -z-20 opacity-70"
-    style="background-image: radial-gradient(1px 1px at 12% 20%, #fff 50%, transparent), radial-gradient(1px 1px at 28% 8%, #cfe 50%, transparent), radial-gradient(1.5px 1.5px at 72% 14%, #fff 50%, transparent), radial-gradient(1px 1px at 88% 30%, #def 50%, transparent), radial-gradient(1px 1px at 55% 6%, #fff 50%, transparent), radial-gradient(1px 1px at 40% 26%, #bdf 50%, transparent), radial-gradient(1.5px 1.5px at 6% 42%, #fff 50%, transparent), radial-gradient(1px 1px at 94% 52%, #fff 50%, transparent);"
-  >
-  </div>
-
-  <!-- Floating crystal -->
-  <div class="pointer-events-none absolute top-[14%] left-1/2 -z-10 -translate-x-1/2 sm:top-[10%]">
-    <div class="absolute inset-0 -m-24 rounded-full bg-aether/20 blur-3xl" style="animation: pulse-glow 6s ease-in-out infinite;"></div>
-    <svg
-      class="relative h-[44vh] max-h-[460px] min-h-[260px] w-auto opacity-50 sm:opacity-60"
-      viewBox="0 0 200 400"
-      aria-hidden="true"
-      style="animation: float 9s ease-in-out infinite;"
-    >
-      <defs>
-        <linearGradient id="cr-a" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#e6fbff"></stop>
-          <stop offset=".45" stop-color="#6fd3ff"></stop>
-          <stop offset="1" stop-color="#1b4a8a"></stop>
-        </linearGradient>
-        <linearGradient id="cr-b" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#9fe6ff"></stop>
-          <stop offset="1" stop-color="#0d2c5c"></stop>
-        </linearGradient>
-      </defs>
-      <polygon points="100,0 160,120 100,400" fill="url(#cr-b)"></polygon>
-      <polygon points="100,0 40,120 100,400" fill="url(#cr-a)"></polygon>
-      <polygon points="100,0 40,120 100,150 160,120" fill="#ffffff" opacity=".35"></polygon>
-      <polyline points="40,120 100,150 160,120" fill="none" stroke="#e6fbff" stroke-width="1" opacity=".7"></polyline>
-      <line x1="100" y1="150" x2="100" y2="400" stroke="#e6fbff" stroke-width=".8" opacity=".5"></line>
-    </svg>
-  </div>
-
-  <!-- Mountains -->
-  <svg class="absolute inset-x-0 bottom-0 -z-10 h-[38vh] w-full" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 260 L120 180 L230 240 L360 120 L470 210 L600 140 L720 230 L860 100 L990 220 L1110 150 L1240 230 L1350 170 L1440 210 V400 H0Z" fill="#0c1428"></path>
-    <path d="M0 320 L160 250 L300 300 L450 220 L620 310 L780 240 L940 310 L1090 250 L1250 320 L1440 270 V400 H0Z" fill="#080d1b"></path>
-    <path d="M0 360 L200 330 L420 365 L640 335 L860 368 L1080 338 L1300 362 L1440 345 V400 H0Z" fill="#05070d"></path>
-  </svg>
-
-  <!-- Aether motes -->
-  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+  <!-- Dragons gliding across the sky -->
+  <div class="pointer-events-none absolute inset-0 -z-20" aria-hidden="true">
     {
-      motes.map((m) => (
-        <span
-          class="absolute bottom-[-10px] rounded-full bg-aether"
-          style={`left:${m.left}%;width:${m.size}px;height:${m.size}px;--dx:${m.dx}px;--o:${m.o};box-shadow:0 0 ${m.size * 3}px #6fd3ff;animation:drift ${m.dur}s linear ${m.delay}s infinite;`}
-        />
+      dragons.map((d) => (
+        <div class="absolute left-0" style={`top:${d.top};animation:glide ${d.dur}s linear ${d.delay}s infinite;`}>
+          <svg
+            viewBox="0 0 200 100"
+            style={`width:min(${Math.round(220 * d.scale)}px, ${Math.round(28 * d.scale)}vw);opacity:${d.o};animation:bob 6s ease-in-out infinite;`}
+          >
+            <path d={dragon} style="fill:var(--dragon)" />
+          </svg>
+        </div>
       ))
     }
   </div>
 
+  <!-- Highlands, cliff and the holy city -->
+  <svg
+    class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[75%] w-full"
+    viewBox="0 0 1440 900"
+    preserveAspectRatio="xMidYMax slice"
+    aria-hidden="true"
+  >
+    <path d={far.ridge} style="fill:var(--mtn-far)"></path>
+    <path d={far.caps} style="fill:var(--snowcap)" opacity="0.75"></path>
+    <path d={mid.ridge} style="fill:var(--mtn-mid)"></path>
+    <path d={mid.caps} style="fill:var(--snowcap)" opacity="0.85"></path>
+    <g transform="translate(-150 0)">
+      <path d={cliff} style="fill:var(--mtn-near)"></path>
+      <path d={city} style="fill:var(--city)"></path>
+      <circle cx="549" cy={base - 80} r="9" style="fill:var(--window);opacity:calc(var(--window-o) * 0.6)"></circle>
+      <g style="fill:var(--window)">
+        {windows.filter((w) => w.lit).map((w) => <rect x={w.x} y={w.y} width="3" height="7" rx="1.5" style="opacity:var(--window-o)" />)}
+      </g>
+    </g>
+    <path d="M0 800 Q240 760 480 790 T960 785 T1440 790 V900 H0 Z" style="fill:var(--snowcap)" opacity="0.9"></path>
+  </svg>
+
+  <!-- Veil behind the title for legibility, and a fade into the page -->
+  <div class="pointer-events-none absolute inset-0 -z-10" style="background: radial-gradient(ellipse 55% 45% at 50% 52%, color-mix(in srgb, var(--hero-fade) 55%, transparent), transparent 75%);"></div>
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40" style="background: linear-gradient(transparent, var(--hero-fade));"></div>
+
   <!-- Wordmark -->
   <div class="relative mx-auto max-w-5xl px-4 text-center sm:px-6">
-    <p class="font-display text-[0.7rem] tracking-[0.3em] text-aether uppercase [text-shadow:0_0_12px_#05070d,0_0_4px_#05070d] sm:text-sm sm:tracking-[0.5em]">The Supply Chain Chronicles</p>
+    <p class="font-display text-[0.7rem] tracking-[0.3em] text-aether uppercase sm:text-sm sm:tracking-[0.5em]">The Supply Chain Chronicles</p>
 
     <h1 class="mt-4 font-display leading-none font-bold tracking-[0.06em] uppercase">
-      <span class="gold-text block text-[clamp(2.6rem,10vw,7.5rem)]">{profile.name.split(' ')[0]}</span>
-      <span class="gold-text block text-[clamp(2.2rem,8.5vw,6.25rem)]">{profile.name.split(' ').slice(1).join(' ')}</span>
+      <span class="title-text block text-[clamp(2.6rem,10vw,7.5rem)]">{profile.name.split(' ')[0]}</span>
+      <span class="title-text block text-[clamp(2.2rem,8.5vw,6.25rem)]">{profile.name.split(' ').slice(1).join(' ')}</span>
     </h1>
 
     <div class="divider"><span></span></div>
 
-    <p class="mx-auto mt-6 max-w-3xl font-serif text-base leading-relaxed text-parchment/90 sm:text-lg md:text-xl">
+    <p class="mx-auto mt-6 max-w-3xl font-serif text-base leading-relaxed text-ink-strong sm:text-lg md:text-xl">
       {profile.headline}
     </p>
 
-    <p class="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-y border-gold/30 px-5 py-2 font-display text-[0.7rem] tracking-[0.25em] text-gold-light uppercase sm:text-xs">
+    <p class="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-y border-frost/40 px-5 py-2 font-display text-[0.7rem] tracking-[0.25em] text-frost-light uppercase sm:text-xs">
       <span>Current Expansion</span>
       <span class="text-aether">◆</span>
-      <span class="text-parchment">{profile.currentExpansion}</span>
+      <span class="text-ink-strong">{profile.currentExpansion}</span>
       <span class="hidden text-aether sm:inline">◆</span>
       <span class="w-full sm:w-auto">{years}+ years of adventuring</span>
     </p>
@@ -107,5 +140,4 @@ const motes = Array.from({ length: 36 }, () => ({
       <a href="#party" class="btn btn-ghost w-full max-w-xs sm:w-auto">Join the Party</a>
     </div>
   </div>
-
 </section>

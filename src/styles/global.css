@@ -9,17 +9,19 @@
   --font-serif: 'Marcellus', Georgia, serif;
   --font-sans: 'Inter Variable', system-ui, sans-serif;
 
-  --color-abyss: #05070d;
-  --color-night: #0a0f1c;
-  --color-deep: #101830;
-  --color-panel: #121a2e;
-  --color-line: #2a3557;
-  --color-mist: #a9b4cf;
-  --color-parchment: #ece4d0;
-  --color-gold: #d8b25a;
-  --color-gold-light: #f6e3a6;
-  --color-gold-dark: #8c6a26;
-  --color-aether: #6fd3ff;
+  /* Theme-switching colours: values live in --t-* below */
+  --color-ground: var(--t-ground);
+  --color-surface: var(--t-surface);
+  --color-line: var(--t-line);
+  --color-ink: var(--t-ink);
+  --color-ink-strong: var(--t-ink-strong);
+  --color-frost: var(--t-frost);
+  --color-frost-light: var(--t-frost-light);
+  --color-frost-dark: var(--t-frost-dark);
+  --color-aether: var(--t-aether);
+  --color-gold: var(--t-gold);
+  --color-gold-light: var(--t-gold-light);
+  --color-gold-dark: var(--t-gold-dark);
 
   --color-tank: #4a7fd6;
   --color-healer: #4fae6a;
@@ -27,61 +29,206 @@
   --color-crafter: #b98a3c;
 }
 
+/* Heavensward-inspired palettes.
+   Light = daylight snowstorm over the Coerthas highlands (bare :root, the default for light-OS visitors).
+   Dark  = night blizzard over the holy city. Explicit data-theme beats the OS setting both ways. */
+:root {
+  color-scheme: light;
+  --t-ground: #e4eaf1;
+  --t-surface: #f4f7fb;
+  --t-surface-2: #d9e2ed;
+  --t-line: #b6c4d5;
+  --t-ink: #3b4b61;
+  --t-ink-strong: #14213a;
+  --t-frost: #3f6894;
+  --t-frost-light: #22466f;
+  --t-frost-dark: #93abc6;
+  --t-aether: #2f86c4;
+  --t-gold: #a87a26;
+  --t-gold-light: #c99a3e;
+  --t-gold-dark: #7a5615;
+  --frost-rgb: 63 104 148;
+  --aether-rgb: 47 134 196;
+  --gold-rgb: 168 122 38;
+  --shade-rgb: 40 60 90;
+  --frame-top: rgb(250 252 255 / 0.9);
+  --frame-bot: rgb(226 234 243 / 0.92);
+  --title-grad: linear-gradient(180deg, #2a4d78 0%, #14243d 45%, #3f6894 75%, #1c3352 100%);
+  --title-shadow: drop-shadow(0 1px 0 rgb(255 255 255 / 0.8));
+  --ghost-fill: #eef3f9;
+  --ghost-hover: #dde7f2;
+  --glow-a: rgb(120 150 190 / 0.25);
+  --glow-b: rgb(150 170 200 / 0.18);
+  --snow: 255 255 255;
+  --snow-edge: 120 145 175;
+  /* hero scene */
+  --sky-top: #8ea3bb;
+  --sky-mid: #b9c7d7;
+  --sky-low: #dfe6ee;
+  --orb: #f7f9fc;
+  --orb-glow: rgb(255 255 255 / 0.7);
+  --mtn-far: #9fb0c5;
+  --mtn-mid: #7f93ab;
+  --mtn-near: #5d708a;
+  --snowcap: #f3f6fa;
+  --city: #3d4d64;
+  --window: #f0c977;
+  --window-o: 0.35;
+  --dragon: #34435a;
+  --hero-fade: #e4eaf1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --t-ground: #060912;
+    --t-surface: #111a2c;
+    --t-surface-2: #172238;
+    --t-line: #2c3b58;
+    --t-ink: #a8b6cd;
+    --t-ink-strong: #e9eff8;
+    --t-frost: #b4c9e2;
+    --t-frost-light: #eef5ff;
+    --t-frost-dark: #5a7090;
+    --t-aether: #7fcfff;
+    --t-gold: #d8b25a;
+    --t-gold-light: #f6e3a6;
+    --t-gold-dark: #8c6a26;
+    --frost-rgb: 180 201 226;
+    --aether-rgb: 127 207 255;
+    --gold-rgb: 216 178 90;
+    --shade-rgb: 0 0 0;
+    --frame-top: rgb(20 30 52 / 0.92);
+    --frame-bot: rgb(8 12 24 / 0.95);
+    --title-grad: linear-gradient(180deg, #ffffff 0%, #dbe8f7 35%, #8ea7c6 65%, #f2f7ff 100%);
+    --title-shadow: drop-shadow(0 2px 6px rgb(0 0 0 / 0.6));
+    --ghost-fill: #0b1222;
+    --ghost-hover: #17233a;
+    --glow-a: rgb(60 90 150 / 0.35);
+    --glow-b: rgb(90 110 160 / 0.12);
+    --snow: 235 243 255;
+    --snow-edge: 235 243 255;
+    --sky-top: #03050b;
+    --sky-mid: #0f1d38;
+    --sky-low: #22385e;
+    --orb: #e8f0fb;
+    --orb-glow: rgb(190 215 255 / 0.45);
+    --mtn-far: #1a2843;
+    --mtn-mid: #111c32;
+    --mtn-near: #0a1222;
+    --snowcap: #c9d7ea;
+    --city: #070c18;
+    --window: #f3c46b;
+    --window-o: 0.9;
+    --dragon: #04070e;
+    --hero-fade: #060912;
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --t-ground: #060912;
+  --t-surface: #111a2c;
+  --t-surface-2: #172238;
+  --t-line: #2c3b58;
+  --t-ink: #a8b6cd;
+  --t-ink-strong: #e9eff8;
+  --t-frost: #b4c9e2;
+  --t-frost-light: #eef5ff;
+  --t-frost-dark: #5a7090;
+  --t-aether: #7fcfff;
+  --t-gold: #d8b25a;
+  --t-gold-light: #f6e3a6;
+  --t-gold-dark: #8c6a26;
+  --frost-rgb: 180 201 226;
+  --aether-rgb: 127 207 255;
+  --gold-rgb: 216 178 90;
+  --shade-rgb: 0 0 0;
+  --frame-top: rgb(20 30 52 / 0.92);
+  --frame-bot: rgb(8 12 24 / 0.95);
+  --title-grad: linear-gradient(180deg, #ffffff 0%, #dbe8f7 35%, #8ea7c6 65%, #f2f7ff 100%);
+  --title-shadow: drop-shadow(0 2px 6px rgb(0 0 0 / 0.6));
+  --ghost-fill: #0b1222;
+  --ghost-hover: #17233a;
+  --glow-a: rgb(60 90 150 / 0.35);
+  --glow-b: rgb(90 110 160 / 0.12);
+  --snow: 235 243 255;
+  --snow-edge: 235 243 255;
+  --sky-top: #03050b;
+  --sky-mid: #0f1d38;
+  --sky-low: #22385e;
+  --orb: #e8f0fb;
+  --orb-glow: rgb(190 215 255 / 0.45);
+  --mtn-far: #1a2843;
+  --mtn-mid: #111c32;
+  --mtn-near: #0a1222;
+  --snowcap: #c9d7ea;
+  --city: #070c18;
+  --window: #f3c46b;
+  --window-o: 0.9;
+  --dragon: #04070e;
+  --hero-fade: #060912;
+}
+
 /* Page ground is unlayered on purpose: it must beat any host/reset stylesheet
    (layered rules lose to unlayered ones regardless of order). */
-:root {
-  color-scheme: dark;
-}
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
-  background: var(--color-abyss);
+  background: var(--t-ground);
 }
 body {
   margin: 0;
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--color-mist);
-  background-color: var(--color-abyss);
+  color: var(--t-ink);
+  background-color: var(--t-ground);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(42 64 120 / 0.35), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 60%, rgb(80 50 120 / 0.12), transparent);
+    radial-gradient(ellipse 80% 50% at 50% -10%, var(--glow-a), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 60%, var(--glow-b), transparent);
   background-attachment: fixed;
+  transition: background-color 0.4s, color 0.4s;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 @layer base {
   ::selection {
-    background: rgb(216 178 90 / 0.35);
-    color: var(--color-gold-light);
+    background: rgb(var(--aether-rgb) / 0.3);
+    color: var(--color-ink-strong);
   }
   :focus-visible {
-    outline: 2px solid var(--color-gold);
+    outline: 2px solid var(--color-aether);
     outline-offset: 3px;
   }
 }
 
 @layer components {
-  /* Metallic gold lettering */
-  .gold-text {
-    background: linear-gradient(180deg, #fff4cf 0%, #f0cf7a 35%, #b8872e 65%, #f3d98f 100%);
+  /* Metallic lettering: ice-silver at night, steel blue by day */
+  .title-text {
+    background: var(--title-grad);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.6));
+    filter: var(--title-shadow);
+  }
+  /* Gold, reserved for levels, points and calls to action */
+  .gold-text {
+    background: linear-gradient(180deg, var(--t-gold-light) 0%, var(--t-gold) 50%, var(--t-gold-dark) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   /* Ornate framed panel with gold hairline + corner filigree */
   .frame {
     position: relative;
-    background: linear-gradient(180deg, rgb(22 31 56 / 0.92), rgb(10 15 28 / 0.95));
-    border: 1px solid rgb(216 178 90 / 0.35);
+    background: linear-gradient(180deg, var(--frame-top), var(--frame-bot));
+    border: 1px solid rgb(var(--frost-rgb) / 0.35);
     box-shadow:
-      inset 0 0 0 1px rgb(0 0 0 / 0.6),
-      inset 0 0 40px rgb(111 211 255 / 0.04),
-      0 20px 40px -20px rgb(0 0 0 / 0.8);
+      inset 0 0 0 1px rgb(var(--shade-rgb) / 0.12),
+      inset 0 0 40px rgb(var(--aether-rgb) / 0.05),
+      0 20px 40px -20px rgb(var(--shade-rgb) / 0.55);
+    transition-property: transform, border-color, background;
   }
   .frame::before,
   .frame::after {
@@ -90,7 +237,7 @@ body {
     width: 22px;
     height: 22px;
     pointer-events: none;
-    border-color: var(--color-gold);
+    border-color: var(--color-frost);
     border-style: solid;
   }
   .frame::before {
@@ -121,14 +268,14 @@ body {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+    background: linear-gradient(90deg, transparent, var(--color-frost), transparent);
   }
   .divider > span {
     width: 10px;
     height: 10px;
     transform: rotate(45deg);
     background: var(--color-aether);
-    box-shadow: 0 0 12px var(--color-aether), 0 0 24px rgb(111 211 255 / 0.5);
+    box-shadow: 0 0 12px var(--color-aether), 0 0 24px rgb(var(--aether-rgb) / 0.5);
   }
 
   /* Buttons */
@@ -140,29 +287,28 @@ body {
   .btn-gold {
     color: #1a1206;
     background: linear-gradient(180deg, #f8e2a0, #d8b25a 50%, #a77b2c);
-    box-shadow: 0 0 24px rgb(216 178 90 / 0.25);
+    box-shadow: 0 0 24px rgb(var(--gold-rgb) / 0.25);
   }
   .btn-gold:hover {
     filter: brightness(1.12);
-    box-shadow: 0 0 36px rgb(216 178 90 / 0.5);
   }
-  /* Gold outline that follows the angled clip-path: gold fill + inset dark layer */
+  /* Outline that follows the angled clip-path: frost fill + inset ground layer */
   .btn-ghost {
     isolation: isolate;
-    color: var(--color-gold-light);
-    background: rgb(216 178 90 / 0.7);
+    color: var(--color-frost-light);
+    background: rgb(var(--frost-rgb) / 0.75);
   }
   .btn-ghost::before {
     content: '';
     position: absolute;
     inset: 1px;
     z-index: -1;
-    background: #0a0f1c;
+    background: var(--ghost-fill);
     clip-path: inherit;
     transition: background 0.3s;
   }
   .btn-ghost:hover::before {
-    background: #1d1a14;
+    background: var(--ghost-hover);
   }
 
   /* Hover shine sweep for cards */
@@ -173,7 +319,7 @@ body {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(110deg, transparent 35%, rgb(255 240 200 / 0.12) 50%, transparent 65%);
+    background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 0.14) 50%, transparent 65%);
     transform: translateX(-120%);
     transition: transform 0.9s ease;
   }
@@ -193,37 +339,21 @@ body {
   }
 }
 
-@keyframes drift {
+@keyframes glide {
   0% {
-    transform: translate3d(0, 0, 0);
-    opacity: 0;
-  }
-  15% {
-    opacity: var(--o, 0.8);
+    transform: translate3d(-30vw, 0, 0);
   }
   100% {
-    transform: translate3d(var(--dx, 20px), -110vh, 0);
-    opacity: 0;
+    transform: translate3d(130vw, -6vh, 0);
   }
 }
-@keyframes pulse-glow {
+@keyframes bob {
   0%,
   100% {
-    opacity: 0.55;
-    transform: scale(1);
+    transform: translateY(0) rotate(-2deg);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.06);
-  }
-}
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-14px);
+    transform: translateY(10px) rotate(2deg);
   }
 }
 

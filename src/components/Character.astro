@@ -25,25 +25,25 @@ const stats = [
 
   <div class="frame reveal grid gap-0 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
     <!-- Portrait / crest -->
-    <div class="relative flex flex-col items-center justify-center gap-6 overflow-hidden border-b border-gold/20 p-8 sm:p-10 lg:border-r lg:border-b-0">
-      <div class="absolute inset-0 -z-0 opacity-60" style="background: radial-gradient(circle at 50% 40%, rgb(111 211 255 / 0.18), transparent 60%);"></div>
+    <div class="relative flex flex-col items-center justify-center gap-6 overflow-hidden border-b lg:justify-start lg:pt-16 border-frost/20 p-8 sm:p-10 lg:border-r lg:border-b-0">
+      <div class="absolute inset-0 -z-0 opacity-60" style="background: radial-gradient(circle at 50% 40%, rgb(var(--aether-rgb) / 0.18), transparent 60%);"></div>
       <div class="relative grid size-60 place-items-center sm:size-72">
-        <div class="absolute inset-[15%] rotate-45 border border-gold/60"></div>
-        <div class="absolute inset-[21%] rotate-45 border border-gold/30"></div>
-        <div class="absolute inset-[27%] rotate-45 bg-gradient-to-br from-deep to-abyss shadow-[0_0_40px_rgb(111_211_255/0.25)]"></div>
-        <span class="gold-text relative font-display text-5xl font-bold sm:text-6xl">{profile.initials}</span>
+        <div class="absolute inset-[15%] rotate-45 border border-frost/60"></div>
+        <div class="absolute inset-[21%] rotate-45 border border-frost/30"></div>
+        <div class="absolute inset-[27%] rotate-45 bg-gradient-to-br from-surface to-ground shadow-[0_0_40px_rgb(var(--aether-rgb)/0.25)]"></div>
+        <span class="title-text relative font-display text-5xl font-bold sm:text-6xl">{profile.initials}</span>
       </div>
       <div class="relative text-center">
-        <p class="font-display text-2xl tracking-[0.12em] text-parchment">{profile.name}</p>
-        <p class="mt-1 font-display text-xs tracking-[0.3em] text-gold uppercase">Warrior of Supply</p>
+        <p class="font-display text-2xl tracking-[0.12em] text-ink-strong">{profile.name}</p>
+        <p class="mt-1 font-display text-xs tracking-[0.3em] text-frost uppercase">Warrior of Supply</p>
       </div>
       <div class="relative grid w-full max-w-xs grid-cols-2 gap-3 text-center">
-        <div class="border border-gold/25 bg-deep/70 px-3 py-3 shadow-[inset_0_0_16px_rgb(111_211_255/0.06)]">
-          <p class="font-display text-2xl text-gold-light">{avgLevel}</p>
+        <div class="border border-frost/25 bg-surface/70 px-3 py-3 shadow-[inset_0_0_16px_rgb(var(--aether-rgb)/0.06)]">
+          <p class="font-display text-2xl text-frost-light">{avgLevel}</p>
           <p class="text-[0.65rem] tracking-[0.2em] uppercase">Avg. Job Lv</p>
         </div>
-        <div class="border border-gold/25 bg-deep/70 px-3 py-3 shadow-[inset_0_0_16px_rgb(111_211_255/0.06)]">
-          <p class="font-display text-2xl text-gold-light">{jobs.length}</p>
+        <div class="border border-frost/25 bg-surface/70 px-3 py-3 shadow-[inset_0_0_16px_rgb(var(--aether-rgb)/0.06)]">
+          <p class="font-display text-2xl text-frost-light">{jobs.length}</p>
           <p class="text-[0.65rem] tracking-[0.2em] uppercase">Jobs Unlocked</p>
         </div>
       </div>
@@ -55,21 +55,21 @@ const stats = [
         {
           stats.map((s) => (
             <div class="flex flex-col gap-1 border-b border-line/70 py-3">
-              <dt class="font-display text-[0.65rem] tracking-[0.25em] text-gold uppercase">{s.label}</dt>
-              <dd class="text-parchment">
-                {s.href ? <a class="underline decoration-gold/40 underline-offset-4 hover:text-gold-light" href={s.href} target="_blank" rel="noopener">{s.value}</a> : s.value}
+              <dt class="font-display text-[0.65rem] tracking-[0.25em] text-frost uppercase">{s.label}</dt>
+              <dd class="text-ink-strong">
+                {s.href ? <a class="underline decoration-frost/40 underline-offset-4 hover:text-frost-light" href={s.href} target="_blank" rel="noopener">{s.value}</a> : s.value}
               </dd>
             </div>
           ))
         }
       </dl>
 
-      <h3 class="mt-8 font-display text-sm tracking-[0.3em] text-gold-light uppercase">Biography</h3>
-      <div class="mt-3 space-y-4 font-serif leading-relaxed text-parchment/85">
+      <h3 class="mt-8 font-display text-sm tracking-[0.3em] text-frost-light uppercase">Biography</h3>
+      <div class="mt-3 space-y-4 font-serif leading-relaxed text-ink-strong/85">
         {profile.bio.map((p) => <p>{p}</p>)}
       </div>
 
-      <h3 class="mt-8 font-display text-sm tracking-[0.3em] text-gold-light uppercase">Attributes</h3>
+      <h3 class="mt-8 font-display text-sm tracking-[0.3em] text-frost-light uppercase">Attributes</h3>
       <ul class="mt-3 grid gap-2 sm:grid-cols-2">
         {
           profile.strengths.map((s) => (

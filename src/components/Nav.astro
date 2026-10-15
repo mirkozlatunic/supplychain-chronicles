@@ -12,17 +12,17 @@ const links = [
 
 <header
   id="site-nav"
-  class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300 data-[scrolled]:border-gold/25 data-[scrolled]:bg-abyss/90 data-[scrolled]:backdrop-blur-md"
+  class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300 data-[scrolled]:border-frost/25 data-[scrolled]:bg-ground/90 data-[scrolled]:backdrop-blur-md"
 >
   <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-20" aria-label="Main">
     <a href="#top" class="group flex items-center gap-3" aria-label="Back to top">
       <span
-        class="grid size-9 rotate-45 place-items-center border border-gold/70 bg-night shadow-[0_0_16px_rgb(216_178_90/0.3)] transition group-hover:shadow-[0_0_24px_rgb(216_178_90/0.6)]"
+        class="grid size-9 rotate-45 place-items-center border border-frost/70 bg-surface shadow-[0_0_16px_rgb(var(--frost-rgb)/0.3)] transition group-hover:shadow-[0_0_24px_rgb(var(--frost-rgb)/0.6)]"
       >
-        <span class="-rotate-45 font-display text-sm font-bold text-gold-light">{profile.initials}</span>
+        <span class="-rotate-45 font-display text-sm font-bold text-frost-light">{profile.initials}</span>
       </span>
-      <span class="hidden font-display text-sm leading-tight tracking-[0.2em] text-parchment uppercase sm:block">
-        Supply Chain<br /><span class="text-gold">Chronicles</span>
+      <span class="hidden font-display text-sm leading-tight tracking-[0.2em] text-ink-strong uppercase sm:block">
+        Supply Chain<br /><span class="text-frost">Chronicles</span>
       </span>
     </a>
 
@@ -32,7 +32,7 @@ const links = [
           <li>
             <a
               href={l.href}
-              class="relative px-4 py-2 font-display text-xs tracking-[0.2em] text-parchment/80 uppercase transition hover:text-gold-light after:absolute after:inset-x-4 after:-bottom-0.5 after:h-px after:origin-center after:scale-x-0 after:bg-gold after:transition hover:after:scale-x-100"
+              class="relative px-4 py-2 font-display text-xs tracking-[0.2em] text-ink-strong/80 uppercase transition hover:text-frost-light after:absolute after:inset-x-4 after:-bottom-0.5 after:h-px after:origin-center after:scale-x-0 after:bg-frost after:transition hover:after:scale-x-100"
             >
               {l.label}
             </a>
@@ -44,9 +44,26 @@ const links = [
     <div class="flex items-center gap-3">
       <a href="#party" class="btn btn-gold hidden !px-5 !py-2.5 !text-xs sm:inline-flex">Join the Party</a>
       <button
+        id="theme-toggle"
+        type="button"
+        class="hidden size-11 place-items-center border border-frost/40 text-frost-light transition hover:bg-frost/10 [.js_&]:grid"
+        aria-label="Switch theme"
+        title="Switch theme"
+      >
+        <!-- moon: shown in dark theme -->
+        <svg class="theme-moon size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"></path>
+        </svg>
+        <!-- sun behind snow: shown in light theme -->
+        <svg class="theme-sun hidden size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"></path>
+        </svg>
+      </button>
+      <button
         id="nav-toggle"
         type="button"
-        class="grid size-11 place-items-center border border-gold/40 text-gold-light lg:hidden"
+        class="grid size-11 place-items-center border border-frost/40 text-frost-light lg:hidden"
         aria-controls="nav-panel"
         aria-expanded="false"
         aria-label="Open menu"
@@ -59,14 +76,14 @@ const links = [
     </div>
   </nav>
 
-  <div id="nav-panel" class="hidden border-t border-gold/25 bg-abyss/95 backdrop-blur-md lg:hidden">
+  <div id="nav-panel" class="hidden border-t border-frost/25 bg-ground/95 backdrop-blur-md lg:hidden">
     <ul class="mx-auto flex max-w-7xl flex-col px-4 py-4 sm:px-6">
       {
         links.map((l) => (
           <li>
             <a
               href={l.href}
-              class="flex items-center gap-3 border-b border-line/60 py-4 font-display tracking-[0.2em] text-parchment uppercase hover:text-gold-light"
+              class="flex items-center gap-3 border-b border-line/60 py-4 font-display tracking-[0.2em] text-ink-strong uppercase hover:text-frost-light"
             >
               <span class="size-1.5 rotate-45 bg-aether shadow-[0_0_8px_var(--color-aether)]" />
               {l.label}
@@ -102,4 +119,30 @@ const links = [
   panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
   document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
   matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && setOpen(false));
+
+  // Theme switch: follows the OS until the visitor picks one, then remembers it.
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('theme-toggle')!;
+  const darkOS = matchMedia('(prefers-color-scheme: dark)');
+  const current = () => (root.dataset.theme as 'light' | 'dark' | undefined) ?? (darkOS.matches ? 'dark' : 'light');
+  const paintToggle = () => {
+    const theme = current();
+    const label = theme === 'dark' ? 'Switch to daylight snowstorm (light theme)' : 'Switch to night blizzard (dark theme)';
+    themeBtn.setAttribute('aria-label', label);
+    themeBtn.title = label;
+    themeBtn.querySelector('.theme-moon')!.classList.toggle('hidden', theme !== 'dark');
+    themeBtn.querySelector('.theme-sun')!.classList.toggle('hidden', theme === 'dark');
+  };
+  themeBtn.addEventListener('click', () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      /* storage unavailable: the choice lasts for this visit only */
+    }
+    paintToggle();
+  });
+  darkOS.addEventListener('change', paintToggle);
+  paintToggle();
 </script>

@@ -39,7 +39,7 @@ const topics = [
       topics.map((t, i) => (
         <a
           href={t.href}
-          class="frame shine reveal group flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:border-gold/70"
+          class="frame shine reveal group flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:border-frost/70"
           style={`transition-delay:${i * 80}ms`}
         >
           <span class="shine-sweep" />
@@ -50,11 +50,11 @@ const topics = [
             >
               {t.tag}
             </span>
-            <span class="text-xs text-mist/70">{t.date}</span>
+            <span class="text-xs text-ink/70">{t.date}</span>
           </div>
-          <h3 class="mt-4 font-display text-lg tracking-wide text-parchment group-hover:text-gold-light">{t.title}</h3>
+          <h3 class="mt-4 font-display text-lg tracking-wide text-ink-strong group-hover:text-frost-light">{t.title}</h3>
           <p class="mt-2 line-clamp-3 text-sm leading-relaxed">{t.body}</p>
-          <span class="mt-auto pt-5 font-display text-xs tracking-[0.2em] text-gold uppercase">Read more ›</span>
+          <span class="mt-auto pt-5 font-display text-xs tracking-[0.2em] text-frost uppercase">Read more ›</span>
         </a>
       ))
     }
