@@ -1,0 +1,44 @@
+---
+import type { IconName } from '../data/profile';
+
+interface Props {
+  name: IconName;
+  class?: string;
+}
+const { name, class: className = 'size-6' } = Astro.props;
+
+// Original line glyphs on a 24×24 grid (stroke = currentColor).
+const paths: Record<IconName, string> = {
+  shield: 'M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3zM12 7v10M8.5 11h7',
+  gear: 'M12 9a3 3 0 100 6 3 3 0 000-6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1',
+  crystal: 'M12 2l5 7-5 13-5-13 5-7zM7 9h10M12 2v20',
+  flag: 'M5 21V4M5 4h11l-2 4 2 4H5',
+  flask: 'M9 3h6M10 3v6L4.5 19a1.5 1.5 0 001.3 2h12.4a1.5 1.5 0 001.3-2L14 9V3M7 15h10',
+  code: 'M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16',
+  sword: 'M14.5 3H21v6.5L10 20.5 3.5 14 14.5 3zM6 12l6 6M3 21l3.5-3.5',
+  chart: 'M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6M20 16V6',
+  scroll: 'M7 4h11a2 2 0 012 2v0a2 2 0 01-2 2h-1v10a2 2 0 01-2 2H6a2 2 0 01-2-2v0a2 2 0 012-2h1V4zM10 9h5M10 13h5',
+  book: 'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM4 19a2 2 0 012-2h13v4H6a2 2 0 01-2-2zM9 7h6',
+  key: 'M14 8a4 4 0 11-8 0 4 4 0 018 0zM12.8 10.8L21 19l-2 2M18 16l-2 2',
+  star: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z',
+  globe: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z',
+  crown: 'M3 18h18M4 18L3 7l5 4 4-7 4 7 5-4-1 11',
+  mail: 'M3 6h18v12H3V6zM3 7l9 7 9-7',
+  link: 'M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1',
+  github:
+    'M9 19c-4 1.3-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 00-1.3-3.2 4.2 4.2 0 00-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 00-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 00-.1 3.2A4.6 4.6 0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21',
+};
+---
+
+<svg
+  class={className}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <path d={paths[name]} />
+</svg>

@@ -1,0 +1,91 @@
+---
+import { jobs } from '../data/profile';
+import { levelFor, yearsAcross } from '../lib/time';
+import Icon from './Icon.astro';
+import SectionHeading from './SectionHeading.astro';
+
+const roleMeta = {
+  tank: { label: 'Tank', color: 'var(--color-tank)' },
+  healer: { label: 'Healer', color: 'var(--color-healer)' },
+  dps: { label: 'DPS', color: 'var(--color-dps)' },
+  crafter: { label: 'Disciple of the Hand', color: 'var(--color-crafter)' },
+} as const;
+
+const rows = jobs
+  .map((j) => {
+    const years = yearsAcross(j.ranges);
+    return { ...j, years, level: levelFor(years) };
+  })
+  .sort((a, b) => b.level - a.level);
+---
+
+<section id="jobs" class="relative py-24 md:py-32">
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-deep/40 to-transparent"></div>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <SectionHeading
+      eyebrow="Armoury Chest"
+      title="Job Levels"
+      intro="Every skill is a job, levelled through real years in the field. Level = 100 × (1 − e^(−years ÷ 5)) — early levels come fast, mastery takes time."
+    />
+
+    <ul class="mb-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs" aria-label="Role legend">
+      {
+        Object.values(roleMeta).map((r) => (
+          <li class="flex items-center gap-2">
+            <span class="size-2.5 rotate-45" style={`background:${r.color}`} />
+            {r.label}
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        rows.map((j, i) => {
+          const role = roleMeta[j.role];
+          return (
+            <article
+              class="frame shine reveal group flex flex-col p-5 transition duration-300 hover:-translate-y-1"
+              style={`transition-delay:${(i % 4) * 70}ms`}
+            >
+              <span class="shine-sweep" />
+              <div class="flex items-start gap-4 sm:min-h-[5.5rem]">
+                <div
+                  class="grid size-14 shrink-0 place-items-center rounded-full border-2 bg-abyss"
+                  style={`border-color:${role.color};color:${role.color};box-shadow:0 0 18px color-mix(in srgb, ${role.color} 45%, transparent)`}
+                >
+                  <Icon name={j.icon} class="size-7" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[0.65rem] tracking-[0.2em] uppercase" style={`color:${role.color}`}>{role.label}</p>
+                  <h3 class="font-display text-lg leading-tight text-parchment">{j.name}</h3>
+                  <p class="text-xs text-mist/80">{j.real}</p>
+                </div>
+              </div>
+
+              <div class="mt-5 flex items-end justify-between">
+                <span class="font-display text-xs tracking-[0.2em] text-gold uppercase">Level</span>
+                <span class="gold-text font-display text-4xl leading-none font-bold">{j.level}</span>
+              </div>
+              <div
+                class="mt-2 h-2 overflow-hidden border border-gold/30 bg-abyss"
+                role="meter"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={j.level}
+                aria-label={`${j.real}: level ${j.level} of 100`}
+              >
+                <div
+                  class="h-full bg-gradient-to-r from-gold-dark via-gold to-gold-light shadow-[0_0_10px_rgb(216_178_90/0.6)]"
+                  style={`width:${j.level}%`}
+                />
+              </div>
+              <p class="mt-2 text-right text-[0.7rem] text-mist/70">{j.years.toFixed(1)} years of experience</p>
+              <p class="mt-3 border-t border-line/70 pt-3 text-sm leading-relaxed">{j.note}</p>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

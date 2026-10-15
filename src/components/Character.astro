@@ -1,0 +1,85 @@
+---
+import { expansions, jobs, profile } from '../data/profile';
+import { formatDuration, levelFor, yearsAcross } from '../lib/time';
+import SectionHeading from './SectionHeading.astro';
+
+const bachem = expansions.flatMap((e) => e.quests).filter((q) => q.org === 'Bachem');
+const bachemStart = bachem.map((q) => q.start).sort()[0];
+const current = expansions.at(-1)!.quests[0];
+const avgLevel = Math.round(
+  jobs.reduce((sum, j) => sum + levelFor(yearsAcross(j.ranges)), 0) / jobs.length,
+);
+
+const stats = [
+  { label: 'Name', value: profile.name },
+  { label: 'Title', value: profile.shortTitle },
+  { label: 'Current Job', value: current.title },
+  { label: 'Home World', value: profile.location },
+  { label: 'Grand Company', value: `Bachem · ${formatDuration(bachemStart, 'present')}` },
+  { label: 'Free Company', value: 'github.com/mirkozlatunic', href: profile.github },
+];
+---
+
+<section id="character" class="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-32">
+  <SectionHeading eyebrow="The Lodestone" title="Character Profile" />
+
+  <div class="frame reveal grid gap-0 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <!-- Portrait / crest -->
+    <div class="relative flex flex-col items-center justify-center gap-6 overflow-hidden border-b border-gold/20 p-8 sm:p-10 lg:border-r lg:border-b-0">
+      <div class="absolute inset-0 -z-0 opacity-60" style="background: radial-gradient(circle at 50% 40%, rgb(111 211 255 / 0.18), transparent 60%);"></div>
+      <div class="relative grid size-48 place-items-center sm:size-56">
+        <div class="absolute inset-0 rotate-45 border border-gold/60"></div>
+        <div class="absolute inset-4 rotate-45 border border-gold/30"></div>
+        <div class="absolute inset-8 rotate-45 bg-gradient-to-br from-deep to-abyss shadow-[0_0_40px_rgb(111_211_255/0.25)]"></div>
+        <span class="gold-text relative font-display text-6xl font-bold sm:text-7xl">{profile.initials}</span>
+      </div>
+      <div class="relative text-center">
+        <p class="font-display text-2xl tracking-[0.12em] text-parchment">{profile.name}</p>
+        <p class="mt-1 font-display text-xs tracking-[0.3em] text-gold uppercase">Warrior of Supply</p>
+      </div>
+      <div class="relative grid w-full max-w-xs grid-cols-2 gap-3 text-center">
+        <div class="border border-line bg-abyss/60 px-3 py-3">
+          <p class="font-display text-2xl text-gold-light">{avgLevel}</p>
+          <p class="text-[0.65rem] tracking-[0.2em] uppercase">Avg. Job Lv</p>
+        </div>
+        <div class="border border-line bg-abyss/60 px-3 py-3">
+          <p class="font-display text-2xl text-gold-light">{jobs.length}</p>
+          <p class="text-[0.65rem] tracking-[0.2em] uppercase">Jobs Unlocked</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="p-6 sm:p-10">
+      <dl class="grid gap-x-8 sm:grid-cols-2">
+        {
+          stats.map((s) => (
+            <div class="flex flex-col gap-1 border-b border-line/70 py-3">
+              <dt class="font-display text-[0.65rem] tracking-[0.25em] text-gold uppercase">{s.label}</dt>
+              <dd class="text-parchment">
+                {s.href ? <a class="underline decoration-gold/40 underline-offset-4 hover:text-gold-light" href={s.href} target="_blank" rel="noopener">{s.value}</a> : s.value}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <h3 class="mt-8 font-display text-sm tracking-[0.3em] text-gold-light uppercase">Biography</h3>
+      <div class="mt-3 space-y-4 font-serif leading-relaxed text-parchment/85">
+        {profile.bio.map((p) => <p>{p}</p>)}
+      </div>
+
+      <h3 class="mt-8 font-display text-sm tracking-[0.3em] text-gold-light uppercase">Attributes</h3>
+      <ul class="mt-3 grid gap-2 sm:grid-cols-2">
+        {
+          profile.strengths.map((s) => (
+            <li class="flex gap-3 text-sm leading-snug">
+              <span class="mt-1.5 size-1.5 shrink-0 rotate-45 bg-aether shadow-[0_0_6px_var(--color-aether)]" />
+              {s}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

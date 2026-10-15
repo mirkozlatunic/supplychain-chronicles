@@ -1,0 +1,62 @@
+---
+import { expansions, profile } from '../data/profile';
+import { formatYM } from '../lib/time';
+
+const current = expansions.at(-1)!.quests[0];
+const cert = expansions.flatMap((e) => e.quests).find((q) => q.org === 'TripleTen')!;
+
+const topics = [
+  {
+    tag: 'Main Scenario',
+    color: 'var(--color-gold)',
+    title: `${current.title} at ${current.org}`,
+    body: current.bullets[0],
+    date: `Since ${formatYM(current.start)}`,
+    href: '#quests',
+  },
+  {
+    tag: 'Party Finder',
+    color: 'var(--color-aether)',
+    title: 'Seeking: the next great raid',
+    body: profile.seeking,
+    date: 'Recruiting',
+    href: '#party',
+  },
+  {
+    tag: 'Patch Notes',
+    color: '#a46bd6',
+    title: `New job unlocked: Code Machinist`,
+    body: `${cert.title} from ${cert.org} — React, TypeScript and AI-assisted development now in the arsenal.`,
+    date: formatYM(cert.end),
+    href: '#jobs',
+  },
+];
+---
+
+<section id="topics" class="relative z-10 mx-auto -mt-16 max-w-7xl px-4 sm:-mt-20 sm:px-6" aria-label="Topics">
+  <div class="grid gap-4 md:grid-cols-3 md:gap-6">
+    {
+      topics.map((t, i) => (
+        <a
+          href={t.href}
+          class="frame shine reveal group flex flex-col p-6 transition duration-300 hover:-translate-y-1 hover:border-gold/70"
+          style={`transition-delay:${i * 80}ms`}
+        >
+          <span class="shine-sweep" />
+          <div class="flex items-center justify-between gap-3">
+            <span
+              class="px-2.5 py-1 font-display text-[0.65rem] tracking-[0.2em] uppercase"
+              style={`color:${t.color};box-shadow:inset 0 0 0 1px ${t.color}`}
+            >
+              {t.tag}
+            </span>
+            <span class="text-xs text-mist/70">{t.date}</span>
+          </div>
+          <h3 class="mt-4 font-display text-lg tracking-wide text-parchment group-hover:text-gold-light">{t.title}</h3>
+          <p class="mt-2 line-clamp-3 text-sm leading-relaxed">{t.body}</p>
+          <span class="mt-auto pt-5 font-display text-xs tracking-[0.2em] text-gold uppercase">Read more ›</span>
+        </a>
+      ))
+    }
+  </div>
+</section>

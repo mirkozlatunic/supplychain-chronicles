@@ -1,0 +1,111 @@
+---
+import { profile } from '../data/profile';
+import { yearsAcross } from '../lib/time';
+
+const years = Math.floor(yearsAcross([[profile.careerStart, 'present']]));
+
+// Deterministic "random" aether motes so builds are reproducible.
+let seed = 7;
+const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const motes = Array.from({ length: 36 }, () => ({
+  left: rand() * 100,
+  size: 2 + rand() * 4,
+  delay: -rand() * 18,
+  dur: 12 + rand() * 14,
+  dx: (rand() - 0.5) * 120,
+  o: 0.4 + rand() * 0.6,
+}));
+---
+
+<section id="top" class="relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden pt-16">
+  <!-- Sky -->
+  <div
+    class="absolute inset-0 -z-30"
+    style="background: radial-gradient(ellipse 70% 55% at 50% 38%, #1d3566 0%, #0d1730 45%, #05070d 85%);"
+  >
+  </div>
+
+  <!-- Stars -->
+  <div
+    class="absolute inset-0 -z-20 opacity-70"
+    style="background-image: radial-gradient(1px 1px at 12% 20%, #fff 50%, transparent), radial-gradient(1px 1px at 28% 8%, #cfe 50%, transparent), radial-gradient(1.5px 1.5px at 72% 14%, #fff 50%, transparent), radial-gradient(1px 1px at 88% 30%, #def 50%, transparent), radial-gradient(1px 1px at 55% 6%, #fff 50%, transparent), radial-gradient(1px 1px at 40% 26%, #bdf 50%, transparent), radial-gradient(1.5px 1.5px at 6% 42%, #fff 50%, transparent), radial-gradient(1px 1px at 94% 52%, #fff 50%, transparent);"
+  >
+  </div>
+
+  <!-- Floating crystal -->
+  <div class="pointer-events-none absolute top-[14%] left-1/2 -z-10 -translate-x-1/2 sm:top-[10%]">
+    <div class="absolute inset-0 -m-24 rounded-full bg-aether/20 blur-3xl" style="animation: pulse-glow 6s ease-in-out infinite;"></div>
+    <svg
+      class="relative h-[44vh] max-h-[460px] min-h-[260px] w-auto opacity-50 sm:opacity-60"
+      viewBox="0 0 200 400"
+      aria-hidden="true"
+      style="animation: float 9s ease-in-out infinite;"
+    >
+      <defs>
+        <linearGradient id="cr-a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#e6fbff"></stop>
+          <stop offset=".45" stop-color="#6fd3ff"></stop>
+          <stop offset="1" stop-color="#1b4a8a"></stop>
+        </linearGradient>
+        <linearGradient id="cr-b" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#9fe6ff"></stop>
+          <stop offset="1" stop-color="#0d2c5c"></stop>
+        </linearGradient>
+      </defs>
+      <polygon points="100,0 160,120 100,400" fill="url(#cr-b)"></polygon>
+      <polygon points="100,0 40,120 100,400" fill="url(#cr-a)"></polygon>
+      <polygon points="100,0 40,120 100,150 160,120" fill="#ffffff" opacity=".35"></polygon>
+      <polyline points="40,120 100,150 160,120" fill="none" stroke="#e6fbff" stroke-width="1" opacity=".7"></polyline>
+      <line x1="100" y1="150" x2="100" y2="400" stroke="#e6fbff" stroke-width=".8" opacity=".5"></line>
+    </svg>
+  </div>
+
+  <!-- Mountains -->
+  <svg class="absolute inset-x-0 bottom-0 -z-10 h-[38vh] w-full" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 260 L120 180 L230 240 L360 120 L470 210 L600 140 L720 230 L860 100 L990 220 L1110 150 L1240 230 L1350 170 L1440 210 V400 H0Z" fill="#0c1428"></path>
+    <path d="M0 320 L160 250 L300 300 L450 220 L620 310 L780 240 L940 310 L1090 250 L1250 320 L1440 270 V400 H0Z" fill="#080d1b"></path>
+    <path d="M0 360 L200 330 L420 365 L640 335 L860 368 L1080 338 L1300 362 L1440 345 V400 H0Z" fill="#05070d"></path>
+  </svg>
+
+  <!-- Aether motes -->
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    {
+      motes.map((m) => (
+        <span
+          class="absolute bottom-[-10px] rounded-full bg-aether"
+          style={`left:${m.left}%;width:${m.size}px;height:${m.size}px;--dx:${m.dx}px;--o:${m.o};box-shadow:0 0 ${m.size * 3}px #6fd3ff;animation:drift ${m.dur}s linear ${m.delay}s infinite;`}
+        />
+      ))
+    }
+  </div>
+
+  <!-- Wordmark -->
+  <div class="relative mx-auto max-w-5xl px-4 text-center sm:px-6">
+    <p class="font-display text-[0.7rem] tracking-[0.3em] text-aether uppercase [text-shadow:0_0_12px_#05070d,0_0_4px_#05070d] sm:text-sm sm:tracking-[0.5em]">The Supply Chain Chronicles</p>
+
+    <h1 class="mt-4 font-display leading-none font-bold tracking-[0.06em] uppercase">
+      <span class="gold-text block text-[clamp(2.6rem,10vw,7.5rem)]">{profile.name.split(' ')[0]}</span>
+      <span class="gold-text block text-[clamp(2.2rem,8.5vw,6.25rem)]">{profile.name.split(' ').slice(1).join(' ')}</span>
+    </h1>
+
+    <div class="divider"><span></span></div>
+
+    <p class="mx-auto mt-6 max-w-3xl font-serif text-base leading-relaxed text-parchment/90 sm:text-lg md:text-xl">
+      {profile.headline}
+    </p>
+
+    <p class="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-y border-gold/30 px-5 py-2 font-display text-[0.7rem] tracking-[0.25em] text-gold-light uppercase sm:text-xs">
+      <span>Current Expansion</span>
+      <span class="text-aether">◆</span>
+      <span class="text-parchment">{profile.currentExpansion}</span>
+      <span class="hidden text-aether sm:inline">◆</span>
+      <span class="w-full sm:w-auto">{years}+ years of adventuring</span>
+    </p>
+
+    <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <a href="#character" class="btn btn-gold w-full max-w-xs sm:w-auto">Begin Your Journey</a>
+      <a href="#party" class="btn btn-ghost w-full max-w-xs sm:w-auto">Join the Party</a>
+    </div>
+  </div>
+
+</section>

@@ -1,0 +1,14 @@
+---
+import { profile } from '../data/profile';
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-gold/20 bg-abyss px-4 py-10 text-center sm:px-6">
+  <div class="divider !mt-0 mb-6"><span></span></div>
+  <p class="font-display text-sm tracking-[0.3em] text-parchment uppercase">The Supply Chain Chronicles</p>
+  <p class="mt-3 text-xs text-mist/70">© {year} {profile.name}. All rights reserved.</p>
+  <p class="mx-auto mt-2 max-w-xl text-[0.7rem] leading-relaxed text-mist/50">
+    A fan-made, MMORPG-inspired portfolio. Not affiliated with or endorsed by Square Enix; all artwork is original.
+  </p>
+  <a href="#top" class="mt-6 inline-block font-display text-xs tracking-[0.25em] text-gold uppercase hover:text-gold-light">Return to Top ▴</a>
+</footer>

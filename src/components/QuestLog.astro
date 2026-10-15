@@ -1,0 +1,104 @@
+---
+import { expansions } from '../data/profile';
+import { formatDuration, formatYM } from '../lib/time';
+import SectionHeading from './SectionHeading.astro';
+
+const kindMeta = {
+  main: { label: 'Main Scenario', color: 'var(--color-gold)' },
+  job: { label: 'Job Quest', color: 'var(--color-tank)' },
+  class: { label: 'Class Quest', color: 'var(--color-healer)' },
+  side: { label: 'Side Quest', color: '#e0a04a' },
+} as const;
+
+// Newest expansion first, like a game's story page.
+const ordered = [...expansions].reverse();
+---
+
+<section id="quests" class="mx-auto max-w-6xl px-4 py-24 sm:px-6 md:py-32">
+  <SectionHeading
+    eyebrow="Journal"
+    title="Quest Log"
+    intro="Five expansions, one story. Open a quest to read its objectives."
+  />
+
+  <ol class="relative space-y-14 md:space-y-20">
+    {
+      ordered.map((x, idx) => (
+        <li class="reveal">
+          <article aria-labelledby={`exp-${x.numeral}`}>
+            <!-- Expansion banner -->
+            <div
+              class="frame relative overflow-hidden px-6 py-10 text-center sm:px-10 sm:py-14"
+              style={`background: radial-gradient(ellipse 80% 120% at 50% 0%, color-mix(in srgb, ${x.hue} 35%, transparent), transparent 70%), linear-gradient(180deg, #121a2e, #070b15);`}
+            >
+              <span
+                class="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 font-display text-[9rem] leading-none font-bold opacity-[0.07] select-none sm:text-[13rem]"
+                style={`color:${x.hue}`}
+                aria-hidden="true"
+              >
+                {x.numeral}
+              </span>
+              <p class="relative font-display text-xs tracking-[0.4em] uppercase" style={`color:${x.hue}`}>
+                Expansion {x.numeral} · {x.span}
+                {idx === 0 && <span class="ml-2 inline-block bg-gold px-2 py-0.5 text-[0.6rem] tracking-[0.2em] text-abyss">Now Playing</span>}
+              </p>
+              <h3 id={`exp-${x.numeral}`} class="gold-text relative mt-3 font-display text-3xl tracking-[0.08em] uppercase sm:text-5xl">
+                {x.name}
+              </h3>
+              <p class="relative mx-auto mt-4 max-w-2xl font-serif text-parchment/85 sm:text-lg">{x.tagline}</p>
+            </div>
+
+            <!-- Quests -->
+            <ul class="mt-4 space-y-3 sm:pl-8 md:pl-16">
+              {x.quests.map((q) => {
+                const k = kindMeta[q.kind];
+                return (
+                  <li>
+                    <details class="group frame open:border-gold/60">
+                      <summary class="flex cursor-pointer list-none items-start gap-4 p-4 sm:items-center sm:p-5 [&::-webkit-details-marker]:hidden">
+                        <span
+                          class="mt-1 grid size-8 shrink-0 rotate-45 place-items-center border sm:mt-0"
+                          style={`border-color:${k.color};box-shadow:0 0 12px color-mix(in srgb, ${k.color} 40%, transparent)`}
+                          aria-hidden="true"
+                        >
+                          <span class="size-2.5 -rotate-45" style={`background:${k.color}`} />
+                        </span>
+                        <span class="min-w-0 flex-1">
+                          <span class="block text-[0.65rem] tracking-[0.2em] uppercase" style={`color:${k.color}`}>{k.label}</span>
+                          <span class="block font-display text-base leading-snug text-parchment sm:text-lg">{q.title}</span>
+                          <span class="block text-sm text-mist/80">
+                            {q.org}
+                            {q.location && <> · {q.location}</>}
+                          </span>
+                        </span>
+                        <span class="hidden shrink-0 text-right text-xs sm:block">
+                          <span class="block text-parchment/90">{formatYM(q.start)} – {formatYM(q.end)}</span>
+                          <span class="block text-mist/70">{formatDuration(q.start, q.end)}</span>
+                        </span>
+                        <span class="mt-1 shrink-0 text-gold transition group-open:rotate-180 sm:mt-0" aria-hidden="true">▾</span>
+                      </summary>
+                      <div class="border-t border-line/70 px-4 pt-4 pb-5 sm:px-5 sm:pl-[4.25rem]">
+                        <p class="mb-3 text-xs text-mist/80 sm:hidden">
+                          {formatYM(q.start)} – {formatYM(q.end)} · {formatDuration(q.start, q.end)}
+                        </p>
+                        <p class="mb-2 font-display text-[0.65rem] tracking-[0.25em] text-gold uppercase">Objectives</p>
+                        <ul class="space-y-2">
+                          {q.bullets.map((b) => (
+                            <li class="flex gap-3 text-sm leading-relaxed text-parchment/85">
+                              <span class="mt-1 text-aether" aria-hidden="true">✦</span>
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </details>
+                  </li>
+                );
+              })}
+            </ul>
+          </article>
+        </li>
+      ))
+    }
+  </ol>
+</section>
